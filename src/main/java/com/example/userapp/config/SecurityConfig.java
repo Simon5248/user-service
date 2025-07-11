@@ -1,4 +1,3 @@
-
 // ===================================================================================
 // FILE: src/main/java/com/example/taskapp/config/SecurityConfig.java
 // ===================================================================================
@@ -28,8 +27,8 @@ import java.util.Arrays;
 @EnableWebSecurity
 public class SecurityConfig {
 
-    //@Autowired
-    //private JwtAuthFilter jwtAuthFilter;
+    @Autowired
+    private JwtAuthFilter jwtAuthFilter;
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
@@ -37,34 +36,27 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth -> auth
-                        //.antMatchers("/actuator/**", "/api/auth/**", "/error").permitAll()
-                        //.anyRequest().authenticated()
-                        // 讓所有請求都通過。因為驗證的工作已經交給 Gateway 了
-                        .anyRequest().permitAll()
+                        .antMatchers("/api/auth/**", "/error", "/actuator/**").permitAll()
+                        .anyRequest().authenticated()
                 )
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                //.addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
+                .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(basic -> basic.disable())
                 .formLogin(form -> form.disable());
 
         return http.build();
     }
 
-    // 2. 定義 CORS 的具體規則，這是一個必須的 Bean
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        // 允許的來源 (您的前端)
-        configuration.setAllowedOrigins(Arrays.asList("http://127.0.0.1:5500","http://192.168.190.131:5500","http://192.168.112.16:7380","http://192.168.112.16:7381","http://192.168.112.16:8380"));
-        // 允許的方法
+        configuration.setAllowedOrigins(Arrays.asList("*"));  // 在生產環境中應該指定具體的域名
         configuration.setAllowedMethods(Arrays.asList("GET", "POST", "PUT", "DELETE", "PATCH", "OPTIONS"));
-        // 允許的標頭
         configuration.setAllowedHeaders(Arrays.asList("*"));
-        // 允許傳遞憑證 (如 cookies)
-        configuration.setAllowCredentials(true);
+        configuration.setAllowCredentials(false);  // 如果設置為 true，則 AllowedOrigins 不能為 *
+        configuration.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        // 對所有路徑套用此規則
         source.registerCorsConfiguration("/**", configuration);
         return source;
     }
