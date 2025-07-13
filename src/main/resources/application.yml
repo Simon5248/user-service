@@ -1,0 +1,26 @@
+spring:
+  profiles:
+    active: ${SPRING_PROFILES_ACTIVE:dev}
+
+# 共用的安全配置
+jwt:
+  header: Authorization
+  token-prefix: Bearer
+  
+# 共用的 Actuator 配置
+management:
+  endpoints:
+    web:
+      base-path: /actuator
+  endpoint:
+    health:
+      enabled: true
+    info:
+      enabled: true
+      
+# 跨域配置
+cors:
+  allowed-origins: "*"
+  allowed-methods: GET,POST,PUT,DELETE,OPTIONS
+  allowed-headers: "*"
+  max-age: 3600
