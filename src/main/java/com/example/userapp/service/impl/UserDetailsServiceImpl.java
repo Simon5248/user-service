@@ -1,7 +1,7 @@
 // ===================================================================================
 // FILE: src/main/java/com/example/taskapp/security/UserDetailsServiceImpl.java
 // ===================================================================================
-package com.example.userapp.security;
+package com.example.userapp.service.impl;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
